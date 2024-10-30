@@ -22,9 +22,16 @@ impl data::Listener for Data {
 
     fn accept(&mut self, event: data::Event) {
         match event {
-            data::Event::ButtonClick(name) => {
-                println!("{} was clicked!", name);
+            data::Event::Clicked(name) => {
+                if &name == "my_button" {
+                    println!("You clicked the button!");
+                }
             },
+            data::Event::ClickedElsewhere(name) => {
+                if &name== "my_button" {
+                    println!("You missed the button!");
+                }
+            }
             _ => (),
         }
     }
@@ -34,10 +41,9 @@ fn main() {
     let draw = grammar::AppParser::new().parse(r#"
 
 
-@ V ! {
+"My Cool Window" 800.0 x 400.0 @ V ! {
     my_button = Button ! /cool.png ($u) 40.0 "Click me!"
-    Label "My Label"
-    Label "Your Label"
+    Label "Okay!"
 }
 
 

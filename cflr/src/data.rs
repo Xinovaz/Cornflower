@@ -5,6 +5,9 @@ pub trait Listener {
 }
 
 pub enum Event {
-	// Buttons
-	ButtonClick(String), ButtonHover(String),
+	Clicked(String),
+	ClickedElsewhere(String),
+	DoubleClicked(String),
+	AltClicked(String),
+	Hovered(String),
 }

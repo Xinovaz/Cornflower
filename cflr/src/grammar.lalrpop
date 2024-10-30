@@ -23,6 +23,9 @@ SText: StyledText = {
 };
 
 Path: String = r#"([a-zA-Z]:)?([\\/][\w.-]+)+\.\w+"# => <>.to_string();
+
+
+// -- -- -- -- -- -- -- -- -- -- WIDGETS -- -- -- -- -- -- -- -- -- --
 Img: Image = "Image" <path:Path> => Image { path };
 
 Lbl: Label = "Label" <text:Text> => Label { text: StyledText::from_unstyled(text) };
@@ -31,9 +34,13 @@ SLbl: Label = "Label" "!" <text:SText> => Label { text };
 Btn: Button = "Button" <p:Path?> <text:Text?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text: match text { Some(t) => Some(StyledText::from_unstyled(t)), None => None } };
 SBtn: Button = "Button" "!" <p:Path?> <text:SText?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text };
 
+
+// -- -- -- -- -- -- -- -- -- -- LAYOUTS -- -- -- -- -- -- -- -- -- --
 Vert: Vertical = "V" <center:SpecialFlag> <items:DrawScope> => Vertical { center, items };
 Horiz: Horizontal = "H" <center:SpecialFlag> <items:DrawScope> => Horizontal { center, items };
 
+
+// -- -- -- -- -- -- -- -- -- -- HIGH-LEVEL -- -- -- -- -- -- -- -- --
 DrawCollection: Vec<Drawable> = {
 	Draw => vec![*<>],
 	<mut l:DrawCollection> <r:Draw>	=> { l.push(*r); l },
@@ -51,13 +58,20 @@ Draw1: Box<Drawable> = {
 	<enabled:EnabledFlag> <x:SBtn>	=> Box::from(Drawable::Button(x, enabled)),
 };
 
-pub Draw: Box<Drawable> = {
+Draw: Box<Drawable> = {
 	Draw1 => <>,
 	<name:Ident> "=" <draw:Draw1> => Box::from(Drawable::Named(name, draw)),
 	r#"#[^\n]*\n"# => Box::from(Drawable::Comment),
 };
 
-pub App: DrawSpace = {
-	"@" <item:Draw> => DrawSpace { dynamic: DrawDynamic::Dynamic, item: *item },
-	<width:Size> "x" <height:Size> "@" <item:Draw> => DrawSpace { dynamic: DrawDynamic::Static(width, height), item: *item },
+App1: DrawSpace = {
+	"@" <item:Draw> => DrawSpace { dynamic: DrawDynamic::Dynamic, item: *item, title: "".to_string() },
+	<width:Size> "x" <height:Size> "@" <item:Draw> => DrawSpace { dynamic: DrawDynamic::Static(width, height), item: *item, title: "".to_string() },
+};
+
+pub App: DrawSpace = <t:Text?> <mut ds:App1>
+	=>
+{ 
+	if let Some(title) = t { ds.title = StyledText::from_unstyled(title).text; }
+	ds
 };

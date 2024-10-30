@@ -2,7 +2,7 @@ use egui::{
 	self,
 	Style, RichText, text::LayoutJob, Color32, FontSelection, Align,
 };
-use std::{env, path::Path};
+use std::env;
 use url::Url;
 
 #[derive(Debug)]
@@ -171,4 +171,5 @@ pub enum Drawable {
 pub struct DrawSpace {
 	pub dynamic: DrawDynamic,
 	pub item: Drawable,
+	pub title: String,
 }
