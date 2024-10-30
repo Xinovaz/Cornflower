@@ -34,11 +34,11 @@ SLbl: Label = "Label" "!" <text:SText> => Label { text };
 Btn: Button = "Button" <p:Path?> <text:Text?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text: match text { Some(t) => Some(StyledText::from_unstyled(t)), None => None } };
 SBtn: Button = "Button" "!" <p:Path?> <text:SText?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text };
 
-Slct: Select = "Select" <name:Text> <text:Text> => Select { name: unquote(name), text: StyledText::from_unstyled(text)};
-SSlct: Select = "Select" <name:Text> "!" <text:SText> => Select { name: unquote(name), text };
+Slct: Select = "Select" <name:Ident> <text:Text> => Select { name, text: StyledText::from_unstyled(text)};
+SSlct: Select = "Select" <name:Ident> "!" <text:SText> => Select { name, text };
 
-Rad: Radio = "Radio" <name:Text> <text:Text> => Radio { name: unquote(name), text: StyledText::from_unstyled(text)};
-SRad: Radio = "Radio" <name:Text> "!" <text:SText> => Radio { name: unquote(name), text };
+Rad: Radio = "Radio" <name:Ident> <text:Text> => Radio { name, text: StyledText::from_unstyled(text)};
+SRad: Radio = "Radio" <name:Ident> "!" <text:SText> => Radio { name, text };
 
 
 // -- -- -- -- -- -- -- -- -- -- LAYOUTS -- -- -- -- -- -- -- -- -- --

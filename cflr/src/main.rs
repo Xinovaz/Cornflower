@@ -53,12 +53,12 @@ fn main() {
 
 "Window" @ V {
     H {
-        my_selector.first = Select "my_selector" "My First"
-        my_selector.second = Select "my_selector" ! ($i #ffff00) "My Second"
+        my_selector.first = Select my_selector "My First"
+        my_selector.second = Select my_selector ! ($i #ffff00) "My Second"
     }
     H {
-        your_selector.first = Radio "your_selector" "Your First"
-        your_selector.second = Radio "your_selector" "Your Second"
+        your_selector.first = Radio your_selector "Your First"
+        your_selector.second = Radio your_selector "Your Second"
     }
 }
 

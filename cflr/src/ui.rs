@@ -22,7 +22,7 @@ pub fn render<L: Listener + 'static>(mut ds: DrawSpace) {
         egui_extras::install_image_loaders(&ctx);
         
         // TODO: more customisation
-		catppuccin_egui::set_theme(ctx, catppuccin_egui::MOCHA);
+		catppuccin_egui::set_theme(ctx, catppuccin_egui::MACCHIATO);
         egui::CentralPanel::default().show(&ctx, |ui| {
             let _ = _render(ui, &mut ds.item, None, &mut listener);
         });

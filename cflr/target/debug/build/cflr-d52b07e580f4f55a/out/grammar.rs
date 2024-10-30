@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.21.0"
-// sha3: 8fcb3a374fdb807b75a5ec33a360d8eb8c32925781c83a43118308aa312db87a
+// sha3: c62c38f90ed691859cede6ebada03df2fa91760c1b9f77df596b01dd0e820d35
 use std::str::FromStr;
 use crate::ui_ast::*;
 #[allow(unused_extern_crates)]
@@ -73,9 +73,9 @@ mod __parse__App {
         // State 10
         43, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 11
-        43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 12
-        43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 13
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 52, 0, 0, 0, -36, 6, 7, -36, -36, -36, -36, 8, 0, 0, 0, 0,
         // State 14
@@ -135,7 +135,7 @@ mod __parse__App {
         // State 41
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0,
         // State 42
-        -72, 0, 0, -72, 0, -72, -72, 0, -72, 0, 0, -72, -72, 0, -72, -72, -72, -72, -72, -72, -72, -72, -72, -72, 0, 0, -72,
+        0, 0, 0, -72, 0, -72, -72, 0, 0, 0, 0, -72, -72, 0, -72, -72, -72, -72, -72, -72, -72, -72, -72, -72, 0, 0, -72,
         // State 43
         -66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -66, 0, 0, 0, 0, 0, 0, 0, 0, 0, -66, 0, 0,
         // State 44
@@ -159,7 +159,7 @@ mod __parse__App {
         // State 53
         0, 0, 0, -18, 0, 0, -18, 0, 0, 0, 0, -18, 0, 0, 0, -18, -18, -18, -18, -18, -18, -18, -18, -18, 0, 0, -18,
         // State 54
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        -39, 0, 0, 0, 0, 0, 0, 0, -39, 0, 0, 0, 0, -39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 55
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 56
@@ -491,7 +491,11 @@ mod __parse__App {
             11 => 4,
             12 => 47,
             13 => 48,
-            14 => 49,
+            14 => match state {
+                11 => 21,
+                12 => 22,
+                _ => 49,
+            },
             15 => 57,
             16 => 58,
             17 => match state {
@@ -530,8 +534,6 @@ mod __parse__App {
                 _ => 14,
             },
             31 => match state {
-                11 => 21,
-                12 => 22,
                 8 => 66,
                 10 => 69,
                 18 => 75,
@@ -2641,7 +2643,7 @@ mod __parse__App {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // Rad = "Radio", Text, Text => ActionFn(21);
+        // Rad = "Radio", Ident, Text => ActionFn(21);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant11(__symbols);
@@ -2761,7 +2763,7 @@ mod __parse__App {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SRad = "Radio", Text, "!", SText => ActionFn(22);
+        // SRad = "Radio", Ident, "!", SText => ActionFn(22);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant17(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -2782,7 +2784,7 @@ mod __parse__App {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // SSlct = "Select", Text, "!", SText => ActionFn(20);
+        // SSlct = "Select", Ident, "!", SText => ActionFn(20);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant17(__symbols);
         let __sym2 = __pop_Variant0(__symbols);
@@ -3115,7 +3117,7 @@ mod __parse__App {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // Slct = "Select", Text, Text => ActionFn(19);
+        // Slct = "Select", Ident, Text => ActionFn(19);
         assert!(__symbols.len() >= 3);
         let __sym2 = __pop_Variant11(__symbols);
         let __sym1 = __pop_Variant11(__symbols);
@@ -3603,7 +3605,7 @@ fn __action19<
     (_, text, _): (usize, String, usize),
 ) -> Select
 {
-    Select { name: unquote(name), text: StyledText::from_unstyled(text)}
+    Select { name, text: StyledText::from_unstyled(text)}
 }
 
 #[allow(unused_variables)]
@@ -3618,7 +3620,7 @@ fn __action20<
     (_, text, _): (usize, StyledText, usize),
 ) -> Select
 {
-    Select { name: unquote(name), text }
+    Select { name, text }
 }
 
 #[allow(unused_variables)]
@@ -3632,7 +3634,7 @@ fn __action21<
     (_, text, _): (usize, String, usize),
 ) -> Radio
 {
-    Radio { name: unquote(name), text: StyledText::from_unstyled(text)}
+    Radio { name, text: StyledText::from_unstyled(text)}
 }
 
 #[allow(unused_variables)]
@@ -3647,7 +3649,7 @@ fn __action22<
     (_, text, _): (usize, StyledText, usize),
 ) -> Radio
 {
-    Radio { name: unquote(name), text }
+    Radio { name, text }
 }
 
 #[allow(unused_variables)]
