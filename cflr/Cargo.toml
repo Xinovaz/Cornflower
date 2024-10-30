@@ -1,0 +1,14 @@
+[package]
+name = "cflr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eframe = "0.29.1"
+egui = "0.29.1"
+egui_extras = { version = "0.29.1", features = ["all_loaders"] }
+lalrpop-util = { version = "0.21.0", features = ["lexer", "unicode"] }
+url = "2.5.2"
+
+[build-dependencies]
+lalrpop = "0.21.0"

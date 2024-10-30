@@ -1,0 +1,63 @@
+use std::str::FromStr;
+
+use crate::ui_ast::*;
+
+grammar;
+
+Ident: String = r"[_a-zA-Z]+[\._a-zA-Z0-9]+[_a-zA-Z0-9]" => <>.to_string();
+UInt: u8 = r"[0-9]+" => u8::from_str(<>).unwrap();
+Size: f32 = r"[0-9]+\.[0-9]+" => f32::from_str(<>).unwrap();
+Text: String = r#""([^"\\]*(\\.[^"\\]*)*)""# => <>.to_string();
+Clr: Color = r"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})" => Color::from_hex_string(<>);
+TextFlags: String = r"\$[urisw]+" => <>.to_string();
+
+SpecialFlag: bool = "!"? => <>.is_some();
+EnabledFlag: bool = "*"? => <>.is_none();
+
+
+SText1: StyledText = "(" <flags:TextFlags?> <color:Clr?> ")" <size:Size?> <text:Text> => StyledText::from_all(text, color, size, match flags { Some(f) => f, None => "".to_string() });
+SText: StyledText = {
+	SText1 => <>,
+	<mut l:SText> "+" <r:Text> => { l.next = Some(Box::from(StyledText::from_unstyled(r))); l },
+	<mut l:SText> "+" <r:SText1> => { l.next = Some(Box::from(r)); l },
+};
+
+Path: String = r#"([a-zA-Z]:)?([\\/][\w.-]+)+\.\w+"# => <>.to_string();
+Img: Image = "Image" <path:Path> => Image { path };
+
+Lbl: Label = "Label" <text:Text> => Label { text: StyledText::from_unstyled(text) };
+SLbl: Label = "Label" "!" <text:SText> => Label { text };
+
+Btn: Button = "Button" <p:Path?> <text:Text?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text: match text { Some(t) => Some(StyledText::from_unstyled(t)), None => None } };
+SBtn: Button = "Button" "!" <p:Path?> <text:SText?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text };
+
+Vert: Vertical = "V" <center:SpecialFlag> <items:DrawScope> => Vertical { center, items };
+Horiz: Horizontal = "H" <center:SpecialFlag> <items:DrawScope> => Horizontal { center, items };
+
+DrawCollection: Vec<Drawable> = {
+	Draw => vec![*<>],
+	<mut l:DrawCollection> <r:Draw>	=> { l.push(*r); l },
+};
+DrawScope: Vec<Drawable> = "{" <collection:DrawCollection> "}" => collection;
+
+Draw1: Box<Drawable> = {
+	Vert 	=> Box::from(Drawable::Vertical(<>)),
+	Horiz 	=> Box::from(Drawable::Horizontal(<>)),
+
+	<enabled:EnabledFlag> <x:Img>	=> Box::from(Drawable::Image(x, enabled)),
+	<enabled:EnabledFlag> <x:Lbl>	=> Box::from(Drawable::Label(x, enabled)),
+	<enabled:EnabledFlag> <x:SLbl>	=> Box::from(Drawable::Label(x, enabled)),
+	<enabled:EnabledFlag> <x:Btn>	=> Box::from(Drawable::Button(x, enabled)),
+	<enabled:EnabledFlag> <x:SBtn>	=> Box::from(Drawable::Button(x, enabled)),
+};
+
+pub Draw: Box<Drawable> = {
+	Draw1 => <>,
+	<name:Ident> "=" <draw:Draw1> => Box::from(Drawable::Named(name, draw)),
+	r#"#[^\n]*\n"# => Box::from(Drawable::Comment),
+};
+
+pub App: DrawSpace = {
+	"@" <item:Draw> => DrawSpace { dynamic: DrawDynamic::Dynamic, item: *item },
+	<width:Size> "x" <height:Size> "@" <item:Draw> => DrawSpace { dynamic: DrawDynamic::Static(width, height), item: *item },
+};
