@@ -110,6 +110,8 @@ impl StyledText {
 	}
 }
 
+// Widget-likes
+
 #[derive(Debug)]
 pub struct Image {
 	pub path: String,
@@ -151,6 +153,13 @@ pub struct Radio {
 }
 
 #[derive(Debug)]
+pub struct Input {
+	pub password: bool,
+	pub hint: Option<String>,
+}
+
+// Layout-likes
+#[derive(Debug)]
 pub struct Horizontal {
 	pub center: bool,
 	pub items: Vec<Drawable>,
@@ -170,11 +179,24 @@ pub struct Grid {
 }
 
 #[derive(Debug)]
+pub struct Centered {
+	pub item: Box<Drawable>,
+}
+
+#[derive(Debug)]
+pub struct Columns {
+	pub number: u8,
+	pub items: Vec<Vec<Drawable>>,
+}
+
+#[derive(Debug)]
 pub enum Drawable {
 	// Layout-likes
 	Horizontal(Horizontal),
 	Vertical(Vertical),
 	Grid(Grid),
+	Centered(Centered),
+	Columns(Columns),
 
 	// Widget-likes (can be enabled/disabled)
 	Label(Label, bool),
@@ -182,6 +204,7 @@ pub enum Drawable {
 	Image(Image, bool),
 	Select(Select, bool),
 	Radio(Radio, bool),
+	Input(Input, bool),
 
 	// Special/Non-Drawable
 	Named(String, Box<Drawable>),

@@ -25,7 +25,7 @@ SText: StyledText = {
 Path: String = r#"([a-zA-Z]:)?([\\/][\w.-]+)+\.\w+"# => <>.to_string();
 
 
-// -- -- -- -- -- -- -- -- -- -- WIDGETS -- -- -- -- -- -- -- -- -- --
+// -- -- -- -- -- -- -- -- -- -- WIDGETS -- -- -- -- -- -- -- -- --
 Img: Image = "Image" <path:Path> => Image { path };
 
 Lbl: Label = "Label" <text:Text> => Label { text: StyledText::from_unstyled(text) };
@@ -40,14 +40,18 @@ SSlct: Select = "Select" <name:Ident> "!" <text:SText> => Select { name, text };
 Rad: Radio = "Radio" <name:Ident> <text:Text> => Radio { name, text: StyledText::from_unstyled(text)};
 SRad: Radio = "Radio" <name:Ident> "!" <text:SText> => Radio { name, text };
 
+Ipt: Input = "Input" <password:SpecialFlag> <hint:Text?> => Input { password, hint };
 
-// -- -- -- -- -- -- -- -- -- -- LAYOUTS -- -- -- -- -- -- -- -- -- --
+
+// -- -- -- -- -- -- -- -- -- -- LAYOUTS -- -- -- -- -- -- -- -- --
 Vert: Vertical = "V" <center:SpecialFlag> <items:DrawScope> => Vertical { center, items };
 Horiz: Horizontal = "H" <center:SpecialFlag> <items:DrawScope> => Horizontal { center, items };
 Grd: Grid = "G" <striped:SpecialFlag> <items:DrawScope> => Grid { uuid: Uuid::new_v4().to_string(), striped, items };
+Ctr: Centered = "C" <item:Draw> => Centered { item };
+Split: Columns = "S" <first:DrawScope> <second:DrawScope> <third:DrawScope?> => Columns { number: 2 + match third { Some(_) => 1, _ => 0 }, items: { let mut v = vec![first, second]; match third { Some(t) => v.push(t), _ => () }; v } };
 
 
-// -- -- -- -- -- -- -- -- -- -- HIGH-LEVEL -- -- -- -- -- -- -- -- --
+// -- -- -- -- -- -- -- -- -- HIGH-LEVEL -- -- -- -- -- -- -- -- --
 DrawCollection: Vec<Drawable> = {
 	Draw => vec![*<>],
 	<mut l:DrawCollection> <r:Draw>	=> { l.push(*r); l },
@@ -58,6 +62,8 @@ Draw1: Box<Drawable> = {
 	Vert 	=> Box::from(Drawable::Vertical(<>)),
 	Horiz 	=> Box::from(Drawable::Horizontal(<>)),
 	Grd		=> Box::from(Drawable::Grid(<>)),
+	Ctr 	=> Box::from(Drawable::Centered(<>)),
+	Split 	=> Box::from(Drawable::Columns(<>)),
 
 
 	<enabled:EnabledFlag> <x:Img>	=> Box::from(Drawable::Image(x, enabled)),
@@ -73,6 +79,8 @@ Draw1: Box<Drawable> = {
 
 	<enabled:EnabledFlag> <x:Rad>	=> Box::from(Drawable::Radio(x, enabled)),
 	<enabled:EnabledFlag> <x:SRad>	=> Box::from(Drawable::Radio(x, enabled)),
+
+	<enabled:EnabledFlag> <x:Ipt>	=> Box::from(Drawable::Input(x, enabled)),
 };
 
 Draw: Box<Drawable> = {

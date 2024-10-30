@@ -66,7 +66,35 @@ fn _render(ui: &mut Ui, d: &mut Drawable, name: Option<String>, listener: &mut i
 					_render(ui, child, None, listener);
 				}
 			}).response)
-		}
+		},
+		Drawable::Centered(c) => {
+			let f = |ui: &mut Ui| {
+				_render(ui, &mut c.item, None, listener);
+			};
+			Some(ui.centered_and_justified(f).response)
+		},
+		Drawable::Columns(c) => {
+			Some(ui.vertical(|ui| { ui.columns(c.number.into(), |cols| {
+				cols[0].vertical_centered_justified(|ui| {
+					for child in &mut c.items[0] {
+						_render(ui, child, None, listener);
+					}
+				});
+				cols[1].vertical_centered_justified(|ui| {
+					for child in &mut c.items[1] {
+						_render(ui, child, None, listener);
+					}
+				});
+				if c.number > 2 {
+					cols[2].vertical_centered_justified(|ui| {
+						for child in &mut c.items[2] {
+						_render(ui, child, None, listener);
+					}
+					});
+				}
+		    })}).response)
+		},
+
 
 		// Widget-Likes
 		Drawable::Label(l, enabled) => {
@@ -153,6 +181,17 @@ fn _render(ui: &mut Ui, d: &mut Drawable, name: Option<String>, listener: &mut i
 				};
 			}
 			Some(res)
+		},
+		Drawable::Input(i, enabled) => {
+			let n = match name {
+				Some(ref nn) => nn,
+				None => &"_last_text_input".to_string()
+			};
+			let mut edit = egui::TextEdit::singleline(listener.text_buffer(n)).password(i.password);
+			if let Some(h) = &i.hint {
+				edit = edit.hint_text(unquote(h.to_string()));
+			}
+			Some(ui.add_enabled(*enabled, edit))
 		},
 
 

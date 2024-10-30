@@ -45,21 +45,31 @@ impl data::Listener for Data {
     fn select(&mut self, name: &String) -> Option<&mut String> {
         self.selects.get_mut(name)
     }
+
+    fn text_buffer(&mut self, name: &String) -> &mut String {
+        if self.selects.keys().collect::<Vec<&String>>().contains(&name) {
+            self.selects.get_mut(name).unwrap()
+        } else {
+            self.selects.insert(name.to_string(), "".to_string());
+            self.selects.get_mut(name).unwrap()
+        }
+    }
 }
 
 fn main() {
     let draw = grammar::AppParser::new().parse(r#"
 
 
-"Window" @ V {
-    H {
-        my_selector.first = Select my_selector "My First"
-        my_selector.second = Select my_selector ! ($i #ffff00) "My Second"
+"Window" @ S {
+    // empty
+} {
+    G {
+        Label "" Label ! ($u) 60.0 "Log In" \
+        Label "Username:" username = Input \
+        Label "Password:" password = Input ! "Your password is safe" \
     }
-    H {
-        your_selector.first = Radio your_selector "Your First"
-        your_selector.second = Radio your_selector "Your Second"
-    }
+} {
+    // empty
 }
 
 
