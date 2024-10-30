@@ -6,7 +6,7 @@ use catppuccin_egui;
 use crate::ui_ast::*;
 use crate::data::*;
 
-pub fn render<L: Listener>(mut ds: DrawSpace) {
+pub fn render<L: Listener + 'static>(mut ds: DrawSpace) {
 	let mut win_size: [f32; 2] = [600.0, 360.0];
 	if let DrawDynamic::Static(width, height) = ds.dynamic {
 		win_size = [width, height];
@@ -16,13 +16,13 @@ pub fn render<L: Listener>(mut ds: DrawSpace) {
         ..Default::default()
     };
 
+    let mut listener = L::start();
+
 	let _ = eframe::run_simple_native(&ds.title, options, move |ctx, _frame| {
         egui_extras::install_image_loaders(&ctx);
         
         // TODO: more customisation
 		catppuccin_egui::set_theme(ctx, catppuccin_egui::MOCHA);
-
-        let mut listener = L::start();
         egui::CentralPanel::default().show(&ctx, |ui| {
             let _ = _render(ui, &mut ds.item, None, &mut listener);
         });
@@ -108,7 +108,56 @@ fn _render(ui: &mut Ui, d: &mut Drawable, name: Option<String>, listener: &mut i
 				}
 			))
 		},
+		Drawable::Select(s, enabled) => {
+			let op: Option<String> = match listener.select(&s.name) {
+				Some(o) => Some(o.clone()),
+				None => match name {
+					Some(ref nn) => {
+						listener.new_select(s.name.clone(), nn.to_string());
+						Some(listener.select(&s.name).unwrap().clone())
+					},
+					None => {
+						listener.new_select(s.name.clone(), "".to_string());
+						None
+					}
+				},
+			};
+			let res = ui.add_enabled(*enabled, egui::SelectableLabel::new(op == name, s.text.to_richtext()));
+			if res.clicked() {
+				match name {
+					Some(ref new_name) => *listener.select(&s.name).unwrap() = new_name.clone(),
+					_ => (),
+				};
+			}
+			Some(res)
+		},
+		Drawable::Radio(r, enabled) => {
+			let op: Option<String> = match listener.select(&r.name) {
+				Some(o) => Some(o.clone()),
+				None => match name {
+					Some(ref nn) => {
+						listener.new_select(r.name.clone(), nn.to_string());
+						Some(listener.select(&r.name).unwrap().clone())
+					},
+					None => {
+						listener.new_select(r.name.clone(), "".to_string());
+						None
+					}
+				},
+			};
+			let res = ui.add_enabled(*enabled, egui::RadioButton::new(op == name, r.text.to_richtext()));
+			if res.clicked() {
+				match name {
+					Some(ref new_name) => *listener.select(&r.name).unwrap() = new_name.clone(),
+					_ => (),
+				};
+			}
+			Some(res)
+		},
 
+
+
+		// Specials <3
 		Drawable::EndRow => {
 			ui.end_row(); None
 		},

@@ -6,6 +6,13 @@ use std::env;
 use url::Url;
 pub use uuid::Uuid;
 
+pub fn unquote(s: String) -> String {
+	let ch = &mut s.chars();
+	ch.next();
+    ch.next_back();
+    ch.as_str().to_string()
+}
+
 #[derive(Debug)]
 pub enum DrawDynamic {
 	Dynamic,
@@ -66,12 +73,8 @@ impl StyledText {
 	}
 
 	pub fn from_unstyled(text: String) -> Self {
-		let ch = &mut text.chars();
-		ch.next();
-	    ch.next_back();
-
 		StyledText {
-			text: ch.as_str().to_string(),
+			text: unquote(text),
 			color: Color { red: 0xFF, green: 0xFF, blue: 0xFF },
 			size: 12.0,
 			underline: false, strikethrough: false,
@@ -136,6 +139,18 @@ pub struct Label {
 }
 
 #[derive(Debug)]
+pub struct Select {
+	pub name: String,
+	pub text: StyledText,
+}
+
+#[derive(Debug)]
+pub struct Radio {
+	pub name: String,
+	pub text: StyledText,
+}
+
+#[derive(Debug)]
 pub struct Horizontal {
 	pub center: bool,
 	pub items: Vec<Drawable>,
@@ -165,6 +180,8 @@ pub enum Drawable {
 	Label(Label, bool),
 	Button(Button, bool),
 	Image(Image, bool),
+	Select(Select, bool),
+	Radio(Radio, bool),
 
 	// Special/Non-Drawable
 	Named(String, Box<Drawable>),

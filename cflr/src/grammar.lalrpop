@@ -34,6 +34,12 @@ SLbl: Label = "Label" "!" <text:SText> => Label { text };
 Btn: Button = "Button" <p:Path?> <text:Text?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text: match text { Some(t) => Some(StyledText::from_unstyled(t)), None => None } };
 SBtn: Button = "Button" "!" <p:Path?> <text:SText?> => Button { icon: match p { Some(path) => Some(Image { path, }), None => None }, text };
 
+Slct: Select = "Select" <name:Text> <text:Text> => Select { name: unquote(name), text: StyledText::from_unstyled(text)};
+SSlct: Select = "Select" <name:Text> "!" <text:SText> => Select { name: unquote(name), text };
+
+Rad: Radio = "Radio" <name:Text> <text:Text> => Radio { name: unquote(name), text: StyledText::from_unstyled(text)};
+SRad: Radio = "Radio" <name:Text> "!" <text:SText> => Radio { name: unquote(name), text };
+
 
 // -- -- -- -- -- -- -- -- -- -- LAYOUTS -- -- -- -- -- -- -- -- -- --
 Vert: Vertical = "V" <center:SpecialFlag> <items:DrawScope> => Vertical { center, items };
@@ -53,11 +59,20 @@ Draw1: Box<Drawable> = {
 	Horiz 	=> Box::from(Drawable::Horizontal(<>)),
 	Grd		=> Box::from(Drawable::Grid(<>)),
 
+
 	<enabled:EnabledFlag> <x:Img>	=> Box::from(Drawable::Image(x, enabled)),
+
 	<enabled:EnabledFlag> <x:Lbl>	=> Box::from(Drawable::Label(x, enabled)),
 	<enabled:EnabledFlag> <x:SLbl>	=> Box::from(Drawable::Label(x, enabled)),
+
 	<enabled:EnabledFlag> <x:Btn>	=> Box::from(Drawable::Button(x, enabled)),
 	<enabled:EnabledFlag> <x:SBtn>	=> Box::from(Drawable::Button(x, enabled)),
+
+	<enabled:EnabledFlag> <x:Slct>	=> Box::from(Drawable::Select(x, enabled)),
+	<enabled:EnabledFlag> <x:SSlct>	=> Box::from(Drawable::Select(x, enabled)),
+
+	<enabled:EnabledFlag> <x:Rad>	=> Box::from(Drawable::Radio(x, enabled)),
+	<enabled:EnabledFlag> <x:SRad>	=> Box::from(Drawable::Radio(x, enabled)),
 };
 
 Draw: Box<Drawable> = {
@@ -76,7 +91,7 @@ pub App: DrawSpace = <t:Text?> <mut ds:App1>
 	=>
 { 
 	if let Some(title) = t {
-		ds.title = StyledText::from_unstyled(title).text;
+		ds.title = unquote(title);
 	}
 	ds
 };
