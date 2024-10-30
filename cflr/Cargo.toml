@@ -11,5 +11,13 @@ egui_extras = { version = "0.29.1", features = ["all_loaders"] }
 lalrpop-util = { version = "0.21.0", features = ["lexer", "unicode"] }
 url = "2.5.2"
 
+[dependencies.uuid]
+version = "1.11.0"
+features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]
+
 [build-dependencies]
 lalrpop = "0.21.0"

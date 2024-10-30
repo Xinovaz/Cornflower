@@ -2,6 +2,7 @@ use egui::{self, Ui, Response};
 use eframe;
 use egui_extras;
 use catppuccin_egui;
+
 use crate::ui_ast::*;
 use crate::data::*;
 
@@ -55,6 +56,17 @@ fn _render(ui: &mut Ui, d: &mut Drawable, name: Option<String>, listener: &mut i
 				Some(ui.vertical(f).response)
 			}
 		},
+		Drawable::Grid(g) => {
+			let n = match name {
+				Some(ref new_name) => new_name,
+				None => &g.uuid,
+			};
+			Some(egui::Grid::new(n).striped(g.striped).show(ui, |ui: &mut Ui| {
+				for child in g.items.iter_mut() {
+					_render(ui, child, None, listener);
+				}
+			}).response)
+		}
 
 		// Widget-Likes
 		Drawable::Label(l, enabled) => {
@@ -95,6 +107,10 @@ fn _render(ui: &mut Ui, d: &mut Drawable, name: Option<String>, listener: &mut i
 					}
 				}
 			))
+		},
+
+		Drawable::EndRow => {
+			ui.end_row(); None
 		},
 
 		Drawable::Named(n, draw) => {

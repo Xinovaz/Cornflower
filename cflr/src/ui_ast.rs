@@ -4,6 +4,7 @@ use egui::{
 };
 use std::env;
 use url::Url;
+pub use uuid::Uuid;
 
 #[derive(Debug)]
 pub enum DrawDynamic {
@@ -147,19 +148,28 @@ pub struct Vertical {
 }
 
 #[derive(Debug)]
+pub struct Grid {
+	pub uuid: String,
+	pub striped: bool,
+	pub items: Vec<Drawable>,
+}
+
+#[derive(Debug)]
 pub enum Drawable {
 	// Layout-likes
 	Horizontal(Horizontal),
 	Vertical(Vertical),
+	Grid(Grid),
 
 	// Widget-likes (can be enabled/disabled)
 	Label(Label, bool),
 	Button(Button, bool),
 	Image(Image, bool),
 
-	// Special
+	// Special/Non-Drawable
 	Named(String, Box<Drawable>),
 	Comment,
+	EndRow,
 }
 
 /**

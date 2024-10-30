@@ -4,7 +4,7 @@ use crate::ui_ast::*;
 
 grammar;
 
-Ident: String = r"[_a-zA-Z]+[\._a-zA-Z0-9]+[_a-zA-Z0-9]" => <>.to_string();
+Ident: String = r"[_a-zA-Z]+[\._a-zA-Z0-9]*[_a-zA-Z0-9]" => <>.to_string();
 UInt: u8 = r"[0-9]+" => u8::from_str(<>).unwrap();
 Size: f32 = r"[0-9]+\.[0-9]+" => f32::from_str(<>).unwrap();
 Text: String = r#""([^"\\]*(\\.[^"\\]*)*)""# => <>.to_string();
@@ -38,6 +38,7 @@ SBtn: Button = "Button" "!" <p:Path?> <text:SText?> => Button { icon: match p { 
 // -- -- -- -- -- -- -- -- -- -- LAYOUTS -- -- -- -- -- -- -- -- -- --
 Vert: Vertical = "V" <center:SpecialFlag> <items:DrawScope> => Vertical { center, items };
 Horiz: Horizontal = "H" <center:SpecialFlag> <items:DrawScope> => Horizontal { center, items };
+Grd: Grid = "G" <striped:SpecialFlag> <items:DrawScope> => Grid { uuid: Uuid::new_v4().to_string(), striped, items };
 
 
 // -- -- -- -- -- -- -- -- -- -- HIGH-LEVEL -- -- -- -- -- -- -- -- --
@@ -50,6 +51,7 @@ DrawScope: Vec<Drawable> = "{" <collection:DrawCollection> "}" => collection;
 Draw1: Box<Drawable> = {
 	Vert 	=> Box::from(Drawable::Vertical(<>)),
 	Horiz 	=> Box::from(Drawable::Horizontal(<>)),
+	Grd		=> Box::from(Drawable::Grid(<>)),
 
 	<enabled:EnabledFlag> <x:Img>	=> Box::from(Drawable::Image(x, enabled)),
 	<enabled:EnabledFlag> <x:Lbl>	=> Box::from(Drawable::Label(x, enabled)),
@@ -61,7 +63,8 @@ Draw1: Box<Drawable> = {
 Draw: Box<Drawable> = {
 	Draw1 => <>,
 	<name:Ident> "=" <draw:Draw1> => Box::from(Drawable::Named(name, draw)),
-	r#"#[^\n]*\n"# => Box::from(Drawable::Comment),
+	r#"//[^\n]*\n"# => Box::from(Drawable::Comment),
+	"\\" => Box::from(Drawable::EndRow),
 };
 
 App1: DrawSpace = {
@@ -72,6 +75,8 @@ App1: DrawSpace = {
 pub App: DrawSpace = <t:Text?> <mut ds:App1>
 	=>
 { 
-	if let Some(title) = t { ds.title = StyledText::from_unstyled(title).text; }
+	if let Some(title) = t {
+		ds.title = StyledText::from_unstyled(title).text;
+	}
 	ds
 };

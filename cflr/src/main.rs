@@ -41,9 +41,14 @@ fn main() {
     let draw = grammar::AppParser::new().parse(r#"
 
 
-"My Cool Window" 800.0 x 400.0 @ V ! {
-    my_button = Button ! /cool.png ($u) 40.0 "Click me!"
-    Label "Okay!"
+"Window" @ V ! {
+    // this is a comment
+    G ! {
+        Label "" Label "12" Label "13" \
+        Label "21" Label "22" Label "23" \
+        Label "31" Label "32" Label "33" \
+        Label "41" Label "42"
+    }
 }
 
 
